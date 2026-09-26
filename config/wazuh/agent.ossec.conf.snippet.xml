@@ -1,0 +1,19 @@
+<!--
+  ossec.conf snippet — Wazuh AGENT side (the Windows endpoint under test).
+
+  Add this <localfile> block so the agent forwards the Sysmon Operational
+  channel to the manager. Without it, Sysmon EventID 1 (process creation) never
+  reaches the rules and *validated coverage* would be structurally impossible.
+
+  Prerequisite: Sysmon installed with the config in
+  config/sysmon/sysmonconfig.xml:
+
+      sysmon64.exe -accepteula -i config\sysmon\sysmonconfig.xml
+-->
+
+<ossec_config>
+  <localfile>
+    <location>Microsoft-Windows-Sysmon/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+</ossec_config>

@@ -1,0 +1,22 @@
+title: Whoami Execution (Discovery)
+id: 1f2e3d4c-5b6a-7089-90ab-cdef01234506
+status: test
+description: >
+  Detects execution of whoami.exe, a very common hands-on-keyboard
+  discovery step after initial access. Low severity by design — high
+  volume, meaningful only in context.
+references:
+  - https://attack.mitre.org/techniques/T1033/
+level: low
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\whoami.exe'
+  condition: selection
+falsepositives:
+  - Administrators and login scripts routinely run whoami
+tags:
+  - attack.discovery
+  - attack.t1033

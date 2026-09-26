@@ -1,0 +1,23 @@
+title: WMIC Process Call Create
+id: 4e5f6071-8293-a4b5-c6d7-e8f900120309
+status: stable
+description: Detects lateral/local execution via wmic process call create.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+level: high
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: selection
+falsepositives:
+  - Legacy administration scripts
+tags:
+  - attack.execution
+  - attack.t1047

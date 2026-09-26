@@ -1,0 +1,123 @@
+# ATT&CK technique universe this lab claims to reason about.
+#
+# This file is the DENOMINATOR for the coverage matrix. Adding a technique here
+# without shipping a detection for it is intentional: it makes the gap visible.
+#
+# atomic GUIDs are REPRESENTATIVE Atomic Red Team test identifiers. Pin them to
+# a specific Red Canary atomics commit in your environment before trusting them
+# (see docs/ARCHITECTURE.md -> "Reproducibility").
+#
+# schema: <technique_id>: {name, tactic, atomics: [{guid, name, executor, destructive}]}
+
+T1105:
+  name: Ingress Tool Transfer
+  tactic: command-and-control
+  atomics:
+    - guid: 3c73d728-52c0-4bb5-a5c1-2f1f0b3c6b41
+      name: certutil download (urlcache)
+      executor: command_prompt
+      destructive: false
+
+T1140:
+  name: Deobfuscate/Decode Files or Information
+  tactic: defense-evasion
+  atomics:
+    - guid: 9c1e6d5f-4a2b-4b0e-9a1c-8f0d2e3a4b55
+      name: certutil decode base64 payload
+      executor: command_prompt
+      destructive: false
+
+T1218.005:
+  name: 'System Binary Proxy Execution: Mshta'
+  tactic: defense-evasion
+  atomics:
+    - guid: 7e2f6a11-2b3c-4d5e-8f90-1a2b3c4d5e60
+      name: mshta executes remote hta
+      executor: command_prompt
+      destructive: false
+
+T1218.010:
+  name: 'System Binary Proxy Execution: Regsvr32'
+  tactic: defense-evasion
+  atomics:
+    - guid: 1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809
+      name: regsvr32 remote scriptlet (squiblydoo)
+      executor: command_prompt
+      destructive: false
+
+T1033:
+  name: System Owner/User Discovery
+  tactic: discovery
+  atomics:
+    - guid: 2b3c4d5e-6f70-8192-a3b4-c5d6e7f8091a
+      name: whoami
+      executor: command_prompt
+      destructive: false
+
+T1003.001:
+  name: 'OS Credential Dumping: LSASS Memory'
+  tactic: credential-access
+  atomics:
+    - guid: 3c4d5e6f-7081-92a3-b4c5-d6e7f8091a2b
+      name: dump lsass with procdump
+      executor: command_prompt
+      destructive: false
+
+T1197:
+  name: BITS Jobs
+  tactic: defense-evasion
+  atomics:
+    - guid: 4d5e6f70-8192-a3b4-c5d6-e7f8091a2b3c
+      name: bitsadmin transfer
+      executor: command_prompt
+      destructive: false
+
+T1047:
+  name: Windows Management Instrumentation
+  tactic: execution
+  atomics:
+    - guid: 5e6f7081-92a3-b4c5-d6e7-f8091a2b3c4d
+      name: wmic process call create
+      executor: command_prompt
+      destructive: false
+
+T1053.005:
+  name: 'Scheduled Task/Job: Scheduled Task'
+  tactic: persistence
+  atomics:
+    - guid: 6f708192-a3b4-c5d6-e7f8-091a2b3c4d5e
+      name: schtasks create
+      executor: command_prompt
+      destructive: false
+
+# ---- Deliberate gaps (in scope, no shipped/compiled detection) --------------
+T1059.001:
+  name: 'Command and Scripting Interpreter: PowerShell'
+  tactic: execution
+  # A Sigma rule exists but is SKIPPED by the compiler subset, so it is NOT
+  # deployed -> shows as "attempted: no". Honest.
+  atomics:
+    - guid: 70819293-b4c5-d6e7-f809-1a2b3c4d5e6f
+      name: encoded powershell command
+      executor: powershell
+      destructive: false
+
+T1027:
+  name: Obfuscated Files or Information
+  tactic: defense-evasion
+  # No detection at all yet — a real gap we choose to publish.
+  atomics:
+    - guid: 8192a3b4-c5d6-e7f8-091a-2b3c4d5e6f70
+      name: base64 encoded script
+      executor: powershell
+      destructive: false
+
+T1082:
+  name: System Information Discovery
+  tactic: discovery
+  # No detection at all yet — a real gap we choose to publish.
+  atomics:
+    - guid: 92a3b4c5-d6e7-f809-1a2b-3c4d5e6f7081
+      name: systeminfo
+      executor: command_prompt
+      destructive: false

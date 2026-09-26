@@ -1,0 +1,30 @@
+<!--
+  ossec.conf snippet — Wazuh MANAGER side.
+
+  This is the minimal manager configuration the lab depends on. Merge these
+  blocks into /var/ossec/etc/ossec.conf (they are additive; do not replace the
+  whole file). The compiled detections in rules/local_rules.xml build on the
+  Sysmon decoders shipped with Wazuh (parent SID 61603), so nothing here needs
+  to change when you regenerate rules with `socrepo compile`.
+-->
+
+<ossec_config>
+
+  <!-- Raise the alerting threshold so only meaningful rules surface. Our
+       compiled Sigma rules are level >= 3, so this keeps the noise floor sane
+       while still letting every socrepo detection through. -->
+  <alerts>
+    <log_alert_level>3</log_alert_level>
+  </alerts>
+
+  <!-- The Sysmon integration is decoded by Wazuh's built-in Windows event
+       channel decoders; no custom decoder is required for process_creation
+       (EventID 1). The agent forwards the channel (see the agent snippet). -->
+  <ruleset>
+    <!-- Wazuh ships these; listed for clarity. Our rules live in the include
+         below and reference <if_sid>61603</if_sid> (Sysmon parent rule). -->
+    <rule_dir>ruleset/rules</rule_dir>
+    <rule_dir>etc/rules</rule_dir>
+  </ruleset>
+
+</ossec_config>

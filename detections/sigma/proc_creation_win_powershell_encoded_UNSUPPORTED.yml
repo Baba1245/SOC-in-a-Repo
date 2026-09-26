@@ -1,0 +1,25 @@
+title: Encoded PowerShell (compiler-subset demo — expected SKIP)
+id: 60718293-a4b5-c6d7-e8f9-00120304050b
+status: experimental
+description: >
+  This rule uses an OR across heterogeneous selection blocks ("1 of selection_*"),
+  which the shipped compiler subset does NOT support. It is included on purpose:
+  running `socrepo compile` should list it under "skipped", proving the compiler
+  reports gaps instead of silently dropping them. See LIMITATIONS.md.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+level: high
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_enc:
+    CommandLine|contains:
+      - ' -enc '
+      - ' -EncodedCommand '
+  selection_hidden:
+    CommandLine|contains: ' -w hidden'
+  condition: 1 of selection_*
+tags:
+  - attack.execution
+  - attack.t1059.001

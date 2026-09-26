@@ -1,0 +1,56 @@
+<!--
+  Sysmon configuration — SOC-in-a-Repo lab.
+
+  Scope: this lab's detections operate on process-creation telemetry
+  (Sysmon EventID 1). This config captures process creation broadly and drops
+  the highest-volume noise, so the endpoint emits the fields our compiled rules
+  match on: Image, CommandLine, ParentImage, ParentCommandLine, User, Hashes.
+
+  It is intentionally minimal and readable rather than a 3000-line "capture
+  everything" config — the coverage matrix is honest about which techniques the
+  detections address, and this config is scoped to match.
+
+  Install / update:
+      sysmon64.exe -accepteula -i config\sysmon\sysmonconfig.xml
+      sysmon64.exe -c config\sysmon\sysmonconfig.xml   (reload)
+
+  Schema 4.90 ships with Sysmon v15+.
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>SHA256</HashAlgorithms>
+  <CheckRevocation>false</CheckRevocation>
+
+  <EventFiltering>
+
+    <!-- EventID 1: Process creation. include = keep only matching events.
+         We keep everything by default (onmatch="exclude" with targeted drops)
+         so no attacker LOLBIN is silently filtered out before it reaches a
+         rule. Add exclusions here only for proven, high-volume benign noise. -->
+    <RuleGroup name="proc-create" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <!-- Drop the Sysmon updater talking to itself (self-noise only). -->
+        <Image condition="is">C:\Windows\Sysmon64.exe</Image>
+        <Image condition="is">C:\Windows\Sysmon.exe</Image>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!-- Silence the noisiest, lowest-value events for a process-focused lab.
+         Turn these back on when you extend coverage beyond process creation. -->
+    <RuleGroup name="drop-noise" groupRelation="or">
+      <FileCreateTime onmatch="include" />        <!-- keep none -->
+      <NetworkConnect onmatch="include" />        <!-- keep none (lab scope) -->
+      <ProcessAccess onmatch="include" />         <!-- keep none (lab scope) -->
+      <RegistryEvent onmatch="include" />         <!-- keep none (lab scope) -->
+      <FileCreate onmatch="include" />            <!-- keep none (lab scope) -->
+      <ImageLoad onmatch="include" />             <!-- keep none (lab scope) -->
+      <PipeEvent onmatch="include" />             <!-- keep none (lab scope) -->
+      <DnsQuery onmatch="include" />              <!-- keep none (lab scope) -->
+    </RuleGroup>
+
+    <!-- Always record process termination so lineage can be reconstructed. -->
+    <RuleGroup name="proc-terminate" groupRelation="or">
+      <ProcessTerminate onmatch="exclude" />
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

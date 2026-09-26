@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install (with dev extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest -q
+
+      # The pipeline must run end-to-end with no secrets — this is the proof.
+      # NB: no --strict here. One rule (…_UNSUPPORTED.yml) is shipped on purpose
+      # to exercise the skip-reporting path, so a skipped rule is expected, not a
+      # failure. --strict is the gate you would use in a repo that expects a
+      # clean compile.
+      - name: Compile detections
+        run: socrepo compile --out /tmp/local_rules.xml
+
+      - name: Regenerate coverage matrix (offline)
+        run: |
+          socrepo validate
+          socrepo coverage --out /tmp/coverage_matrix.md
+
+      - name: Full offline demo
+        run: socrepo demo --provider heuristic

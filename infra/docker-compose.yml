@@ -1,0 +1,90 @@
+# --------------------------------------------------------------------------- #
+# SOC-in-a-Repo — Wazuh single-node lab stack (infrastructure-as-code)
+#
+# This is a *lab* topology: one Wazuh indexer, one manager, one dashboard, sized
+# to run on a laptop. It is deliberately not production-hardened (single node, no
+# TLS cert rotation, demo passwords via .env). The point is a reproducible place
+# to deploy the compiled detections and prove they fire against Atomic Red Team.
+#
+#   1. cp .env.example .env   # then edit the passwords
+#   2. docker compose up -d
+#   3. Point a Windows endpoint's Wazuh agent + Sysmon at the manager.
+#   4. socrepo compile  ->  copy config/wazuh/local_rules.xml into the manager
+#      (see infra/README.md for the bind-mount that automates this).
+#
+# Pinned image tags keep the lab reproducible; bump them deliberately.
+# --------------------------------------------------------------------------- #
+name: soc-in-a-repo
+
+services:
+  wazuh.indexer:
+    image: wazuh/wazuh-indexer:4.9.2
+    hostname: wazuh.indexer
+    restart: unless-stopped
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "bootstrap.memory_lock=true"
+      - "node.name=wazuh.indexer"
+      - "discovery.type=single-node"
+      - "plugins.security.disabled=false"
+      - "INDEXER_PASSWORD=${INDEXER_PASSWORD:-SecretPassword}"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - wazuh-indexer-data:/var/lib/wazuh-indexer
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sk https://localhost:9200 >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "9200:9200"
+
+  wazuh.manager:
+    image: wazuh/wazuh-manager:4.9.2
+    hostname: wazuh.manager
+    restart: unless-stopped
+    depends_on:
+      wazuh.indexer:
+        condition: service_healthy
+    environment:
+      - "INDEXER_URL=https://wazuh.indexer:9200"
+      - "INDEXER_USERNAME=admin"
+      - "INDEXER_PASSWORD=${INDEXER_PASSWORD:-SecretPassword}"
+      - "FILEBEAT_SSL_VERIFICATION_MODE=none"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - wazuh-manager-config:/var/ossec/etc
+      - wazuh-manager-logs:/var/ossec/logs
+      # Ship the compiled detections straight into the manager's rules dir.
+      # `socrepo compile` writes config/wazuh/local_rules.xml; this bind mount
+      # makes a `docker compose restart wazuh.manager` pick them up.
+      - ../config/wazuh/local_rules.xml:/var/ossec/etc/rules/local_rules.xml:ro
+    ports:
+      - "1514:1514"   # agent connection (TCP)
+      - "1515:1515"   # agent enrollment
+      - "55000:55000" # manager REST API
+
+  wazuh.dashboard:
+    image: wazuh/wazuh-dashboard:4.9.2
+    hostname: wazuh.dashboard
+    restart: unless-stopped
+    depends_on:
+      wazuh.indexer:
+        condition: service_healthy
+    environment:
+      - "INDEXER_USERNAME=admin"
+      - "INDEXER_PASSWORD=${INDEXER_PASSWORD:-SecretPassword}"
+      - "WAZUH_API_URL=https://wazuh.manager"
+      - "DASHBOARD_USERNAME=${DASHBOARD_USERNAME:-kibanaserver}"
+      - "DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD:-kibanaserver}"
+    ports:
+      - "5601:5601"   # https://localhost:5601
+
+volumes:
+  wazuh-indexer-data:
+  wazuh-manager-config:
+  wazuh-manager-logs:

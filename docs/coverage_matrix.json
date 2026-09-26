@@ -1,0 +1,159 @@
+{
+  "rows": [
+    {
+      "technique_id": "T1105",
+      "technique_name": "Ingress Tool Transfer",
+      "tactic": "command-and-control",
+      "detection_ids": [
+        "100201"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "3c73d728-52c0-4bb5-a5c1-2f1f0b3c6b41"
+      ]
+    },
+    {
+      "technique_id": "T1003.001",
+      "technique_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "credential-access",
+      "detection_ids": [
+        "100203"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "3c4d5e6f-7081-92a3-b4c5-d6e7f8091a2b"
+      ]
+    },
+    {
+      "technique_id": "T1027",
+      "technique_name": "Obfuscated Files or Information",
+      "tactic": "defense-evasion",
+      "detection_ids": [],
+      "has_detection": false,
+      "validated": false,
+      "atomic_guids": [
+        "8192a3b4-c5d6-e7f8-091a-2b3c4d5e6f70"
+      ]
+    },
+    {
+      "technique_id": "T1140",
+      "technique_name": "Deobfuscate/Decode Files or Information",
+      "tactic": "defense-evasion",
+      "detection_ids": [
+        "100201"
+      ],
+      "has_detection": true,
+      "validated": false,
+      "atomic_guids": [
+        "9c1e6d5f-4a2b-4b0e-9a1c-8f0d2e3a4b55"
+      ]
+    },
+    {
+      "technique_id": "T1197",
+      "technique_name": "BITS Jobs",
+      "tactic": "defense-evasion",
+      "detection_ids": [
+        "100200"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "4d5e6f70-8192-a3b4-c5d6-e7f8091a2b3c"
+      ]
+    },
+    {
+      "technique_id": "T1218.005",
+      "technique_name": "System Binary Proxy Execution: Mshta",
+      "tactic": "defense-evasion",
+      "detection_ids": [
+        "100202"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "7e2f6a11-2b3c-4d5e-8f90-1a2b3c4d5e60"
+      ]
+    },
+    {
+      "technique_id": "T1218.010",
+      "technique_name": "System Binary Proxy Execution: Regsvr32",
+      "tactic": "defense-evasion",
+      "detection_ids": [
+        "100204"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809"
+      ]
+    },
+    {
+      "technique_id": "T1033",
+      "technique_name": "System Owner/User Discovery",
+      "tactic": "discovery",
+      "detection_ids": [
+        "100206"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "2b3c4d5e-6f70-8192-a3b4-c5d6e7f8091a"
+      ]
+    },
+    {
+      "technique_id": "T1082",
+      "technique_name": "System Information Discovery",
+      "tactic": "discovery",
+      "detection_ids": [],
+      "has_detection": false,
+      "validated": false,
+      "atomic_guids": [
+        "92a3b4c5-d6e7-f809-1a2b-3c4d5e6f7081"
+      ]
+    },
+    {
+      "technique_id": "T1047",
+      "technique_name": "Windows Management Instrumentation",
+      "tactic": "execution",
+      "detection_ids": [
+        "100207"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "5e6f7081-92a3-b4c5-d6e7-f8091a2b3c4d"
+      ]
+    },
+    {
+      "technique_id": "T1059.001",
+      "technique_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "execution",
+      "detection_ids": [],
+      "has_detection": false,
+      "validated": false,
+      "atomic_guids": [
+        "70819293-b4c5-d6e7-f809-1a2b3c4d5e6f"
+      ]
+    },
+    {
+      "technique_id": "T1053.005",
+      "technique_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "persistence",
+      "detection_ids": [
+        "100205"
+      ],
+      "has_detection": true,
+      "validated": true,
+      "atomic_guids": [
+        "6f708192-a3b4-c5d6-e7f8-091a2b3c4d5e"
+      ]
+    }
+  ],
+  "summary": {
+    "techniques_total": 12,
+    "coverage_attempted": 9,
+    "coverage_validated": 8
+  }
+}

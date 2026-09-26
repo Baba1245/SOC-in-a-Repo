@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "socrepo"
+version = "0.3.0"
+description = "SOC-in-a-Repo: a detection lab that measures attempted vs validated ATT&CK coverage and scores LLM alert triage against manual labels."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "SOC-in-a-Repo" }]
+keywords = [
+    "detection-engineering",
+    "sigma",
+    "wazuh",
+    "mitre-attack",
+    "atomic-red-team",
+    "soc",
+    "llm-triage",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Information Technology",
+    "Topic :: Security",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+# The LLM triage provider. Everything works without it (heuristic fallback).
+llm = ["anthropic>=0.39"]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+socrepo = "socrepo.cli:app"
+
+[project.urls]
+Documentation = "https://github.com/your-org/soc-in-a-repo/blob/main/docs/ARCHITECTURE.md"
+Source = "https://github.com/your-org/soc-in-a-repo"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/socrepo"]
+
+[tool.pytest.ini_options]
+# Tests import from src/ without an install; keep CI and local identical.
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4"]
+ignore = [
+    "E501",  # long lines in embedded XML/prompt strings are intentional
+    "B008",  # typer uses function calls in argument defaults by design
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]

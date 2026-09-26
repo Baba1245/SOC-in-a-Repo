@@ -1,0 +1,24 @@
+title: Regsvr32 Remote Scriptlet Execution (Squiblydoo)
+id: 9a2c1b44-7e33-4a12-9f6a-0d5b2a3c4d05
+status: stable
+description: >
+  Detects regsvr32.exe loading a remote scriptlet (the classic "Squiblydoo"
+  application-whitelisting bypass) via /i:<url> /s scrobj.dll.
+references:
+  - https://attack.mitre.org/techniques/T1218/010/
+level: high
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\regsvr32.exe'
+    CommandLine|contains|all:
+      - 'scrobj'
+      - '/i:'
+  condition: selection
+falsepositives:
+  - Rare legitimate COM registration from remote shares
+tags:
+  - attack.defense_evasion
+  - attack.t1218.010
