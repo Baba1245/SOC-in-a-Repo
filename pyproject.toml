@@ -46,8 +46,8 @@ dev = [
 socrepo = "socrepo.cli:app"
 
 [project.urls]
-Documentation = "https://github.com/your-org/soc-in-a-repo/blob/main/docs/ARCHITECTURE.md"
-Source = "https://github.com/your-org/soc-in-a-repo"
+Documentation = "https://github.com/Baba1245/soc-in-a-repo/blob/main/docs/ARCHITECTURE.md"
+Source = "https://github.com/Baba1245/soc-in-a-repo"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/socrepo"]
